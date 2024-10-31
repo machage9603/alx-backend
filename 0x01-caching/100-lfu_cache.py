@@ -20,13 +20,12 @@ class LFUCache(BaseCaching):
         Initialize the LFUCache with cache, frequency tracking, and LRU tracking.
         """
         super().__init__()
-        self.usage_frequency = {}  # Dictionary to track the frequency of each key
-        self.recently_used = {}    # Dictionary to track last access time for each key
+        self.usage_frequency = {}  # Tracks frequency of each key
+        self.recently_used = {}    # Tracks last access time for each key
 
     def put(self, key, item):
         """
         Adds an item to the cache using LFU + LRU policies.
-
         If the cache exceeds BaseCaching.MAX_ITEMS, it removes
         the least frequently used item. If multiple items have the same
         frequency, it uses the least recently used (LRU) policy to break ties.
@@ -46,11 +45,17 @@ class LFUCache(BaseCaching):
             if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
                 # Find least frequently used items
                 min_freq = min(self.usage_frequency.values())
-                least_used = [k for k, freq in self.usage_frequency.items() if freq == min_freq]
+                least_used = [
+                    k for k, freq in self.usage_frequency.items()
+                    if freq == min_freq
+                ]
 
                 # Apply LRU on least frequently used items if needed
                 if len(least_used) > 1:
-                    lru_item = min(least_used, key=lambda k: self.recently_used[k])
+                    lru_item = min(
+                        least_used,
+                        key=lambda k: self.recently_used[k]
+                    )
                     self._discard(lru_item)
                 else:
                     self._discard(least_used[0])
@@ -65,7 +70,6 @@ class LFUCache(BaseCaching):
     def get(self, key):
         """
         Retrieves an item from the cache.
-
         Updates both frequency and access time for the item if found.
 
         Args:
